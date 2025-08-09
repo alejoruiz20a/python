@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-CANTIDAD_EMPLEADOS = 3
+CANTIDAD_EMPLEADOS = 4
 
 def leer_empleado(archivo):
     with open(archivo, 'r') as file: 
@@ -26,10 +26,10 @@ def leer_empleado(archivo):
 # DEFINIR ARCHIVOS
 archivos = []
 for i in range(CANTIDAD_EMPLEADOS):
-    archivos.append(f"Clase4\Empleados/empleado{str(i+1)}.txt")
+    archivos.append(f"Clase4/Empleados/empleado{str(i+1)}.txt")
 
 # VERIFICAR SI LOS ARCHIVOS EXISTEN    
-archivos = [archivo for archivo in archivos if os.path.exists(archivo)] #pendiente
+archivos = [archivo for archivo in archivos if os.path.exists(archivo)]
 
 datos_empleados = []
 for archivo in archivos:
