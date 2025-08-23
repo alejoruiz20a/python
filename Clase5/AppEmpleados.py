@@ -20,7 +20,88 @@ class AppEmpleados:
         frame_form.pack(padx=10, pady=10, fill="x")
 
         # CAMPOS DEL FORMULARIO
+        #NOMBRE
         tk.Label(frame_form, text=("Nombre: ")).grid(row=0, column=0, padx=5, pady=5)
+        tk.Entry(frame_form, textvariable=self.nombre, width=40).grid(row=0, column=1, padx=5, pady=5)
+        #CEDULA
+        tk.Label(frame_form, text=("Cédula: ")).grid(row=1, column=0, padx=5, pady=5)
+        tk.Entry(frame_form, textvariable=self.cedula, width=40).grid(row=1, column=1, padx=5, pady=5)
+        #CARGO
+        tk.Label(frame_form, text=("Cargo: ")).grid(row=2, column=0, padx=5, pady=5)
+        tk.Entry(frame_form, textvariable=self.cargo, width=40).grid(row=2, column=1, padx=5, pady=5)
+        #SUELDO
+        tk.Label(frame_form, text=("Sueldo: ")).grid(row=3, column=0, padx=5, pady=5)
+        tk.Entry(frame_form, textvariable=self.sueldo, width=40).grid(row=3, column=1, padx=5, pady=5)
+
+        # BOTONES DEL CRUD
+        frame_botones = tk.Frame(root)
+        frame_botones.pack(pady=10)
+
+        tk.Button(frame_botones, text="Guardar", command=self.guardar_empleado).grid(row=0, column=0, padx=5) # GUARDAR
+        tk.Button(frame_botones, text="Editar", command=self.editar_empleado).grid(row=0, column=1, padx=5) # EDITAR
+        tk.Button(frame_botones, text="Eliminar", command=self.eliminar_empleado).grid(row=0, column=2, padx=5) # ELIMINAR
+        tk.Button(frame_botones, text="Limpiar", command=self.limpiar_campos).grid(row=0, column=3, padx=5) # LIMPIAR
+        
+        # TABLA DE EMPLEADOS
+        frame_tabla = tk.LabelFrame(root, text="Lista de Empleados")
+        frame_tabla.pack(pady=10, padx=10) #ahorita
+
+        self.tabla = ttk.Treeview(frame_tabla, columns=("ID", "Nombre", "Cédula", "Cargo", "Sueldo"), show="headings")
+        self.tabla.pack(pady=10, padx=10)
+
+        # Configurar las columnas
+        self.tabla.heading("ID", text="ID")
+        self.tabla.heading("Nombre", text="Nombre")
+        self.tabla.heading("Cédula", text="Cédula")
+        self.tabla.heading("Cargo", text="Cargo")
+        self.tabla.heading("Sueldo", text="Sueldo")
+
+        self.tabla.column("ID", width=50)
+        self.tabla.column("Nombre", width=220)
+        self.tabla.column("Cédula", width=170)
+        self.tabla.column("Cargo", width=170)
+        self.tabla.column("Sueldo", width=150)
+
+        # SCROLLBAR
+        scroll = ttk.Scrollbar(frame_tabla, orient="vertical", command=self.tabla.yview)
+        scroll.pack(side="right", fill="y")
+        self.tabla.configure(yscrollcommand=scroll.set)
+
+        # SELECCIÓN
+        self.tabla.bind("<ButtonRelease-1>", self.seleccionar_empleado)
+
+        # CARGAR DATOS DE LA TABLA
+        self.actualizar_tabla()
+
+    def guardar_empleado(self):
+        if not self.validar_campos():
+            return
+
+    def editar_empleado(self):
+        pass
+
+    def eliminar_empleado(self):
+        pass
+
+    def limpiar_campos(self):
+        pass
+
+    def validar_campos(self):
+        if not self.nombre.get() or not self.cedula.get() or not self.cargo.get():
+            messagebox.showerror("ERROR", "Todos los campos son obligatorios.")
+            return False
+        try:
+            float(self.sueldo.get())
+        except:
+            messagebox.showerror("ERROR", "El sueldo debe ser un número válido.")
+            return False
+        return True
+
+    def seleccionar_empleado(self):
+        pass
+
+    def actualizar_tabla(self):
+        pass
 
 # INICIAR APLICACION
 if __name__ == "__main__":
