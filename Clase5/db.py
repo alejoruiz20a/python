@@ -6,9 +6,9 @@ def conectar_db():
 
     cursor.execute('''
                     CREATE TABLE IF NOT EXISTS empleados (
-                   id INTEGER PRIMARY KEY AUTOINCREMENT
-                   nombre TEXT NOT NULL
-                   cedula TEXT UNIQUE NOT NULL
+                   id INTEGER PRIMARY KEY AUTOINCREMENT,
+                   nombre TEXT NOT NULL,
+                   cedula TEXT UNIQUE NOT NULL,
                    cargo TEXT NOT NULL,
                    sueldo REAL NOT NULL)
                    ''')

@@ -76,15 +76,54 @@ class AppEmpleados:
     def guardar_empleado(self):
         if not self.validar_campos():
             return
+        
+        if self.id_empleado.get(): # SI HAY UN ID, SE ACTUALIZA
+            actualizar_empleado(
+                self.id_empleado.get(),
+                self.nombre.get(),
+                self.cedula.get(),
+                self.cargo.get(),
+                self.sueldo.get()
+            )
+            messagebox.showinfo("ÉXITO", "Empleado actualizado correctamente.")
+        else:  # SI NO HAY UN ID, SE CREA UN EMPLEADO NUEVO
+            try:
+                crear_empleado(
+                    self.nombre.get(),
+                    self.cedula.get(),
+                    self.cargo.get(),
+                    self.sueldo.get()
+                )
+                messagebox.showinfo("ÉXITO", "Empleado creado con éxito.")
+            except sqlite3.IntegrityError:
+                messagebox.showerror("ERROR", "Ya existe un empleado con esa cédula.")
+        
+        self.limpiar_campos()
+        self.actualizar_tabla()
 
     def editar_empleado(self):
-        pass
+        if not self.id_empleado.get():
+            messagebox.showerror("ERROR", "Seleccione un empleado para editar.")
+            return
+        self.guardar_empleado()
 
     def eliminar_empleado(self):
-        pass
+        if not self.id_empleado.get():
+            messagebox.showerror("ERROR", "Seleccione un empleado para eliminarlo.")
+            return
+        
+        if messagebox.askyesno("ADVERTENCIA", f"¿Estás seguro de que deseas eliminar al empleado {self.nombre.get()}?"):
+            eliminar_empleado(self.id_empleado.get())
+            messagebox.showinfo("ÉXITO", "Empleado eliminado correctamente.")
+            self.limpiar_campos()
+            self.actualizar_tabla()
 
     def limpiar_campos(self):
-        pass
+        self.id_empleado.set("")
+        self.nombre.set("")
+        self.cedula.set("")
+        self.cargo.set("")
+        self.sueldo.set(0.0)
 
     def validar_campos(self):
         if not self.nombre.get() or not self.cedula.get() or not self.cargo.get():
@@ -97,11 +136,24 @@ class AppEmpleados:
             return False
         return True
 
-    def seleccionar_empleado(self):
-        pass
+    def seleccionar_empleado(self, event):
+        item = self.tabla.selection()
+
+        if item:
+            datos = self.tabla.item(item, "values") # datos = [campo0, campo1, campo2, campo3, campo4]
+            self.id_empleado.set(datos[0])
+            self.nombre.set(datos[1])
+            self.cedula.set(datos[2])
+            self.cargo.set(datos[3])
+            self.sueldo.set(datos[4])
 
     def actualizar_tabla(self):
-        pass
+        for item in self.tabla.get_children():
+            self.tabla.delete(item)
+
+        empleados = leer_empleados()
+        for empleado in empleados:
+            self.tabla.insert("", "end", values=empleado)
 
 # INICIAR APLICACION
 if __name__ == "__main__":
