@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Registro{% endblock %}
+
+{% block content %}
+<h2>Registro de Usuarios</h2>
+
+<form method='post'>
+    {% csrf_token %}
+
+    <div class = 'form_group'>
+        <label>Usuario:</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+            <div class="error">{{ form.username.errors.0 }}</div>
+        {% endif %}
+    </div>
+
+    <div class = 'form_group'>
+        <label>Email:</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+            <div class="error">{{ form.email.errors.0 }}</div>
+        {% endif %}
+    </div>
+
+    <div class = 'form_group'>
+        <label>Nombre (Opcional):</label>
+        {{ form.nombre }}
+    </div>
+
+    <div class = 'form_group'>
+        <label>Apellido (Opcional):</label>
+        {{ form.apellido }}
+    </div>
+
+    <div class = 'form_group'>
+        <label>Contraseña:</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+            <div class="error">{{ form.password.errors.0 }}</div>
+        {% endif %}
+    </div>
+
+    <div class = 'form_group'>
+        <label>Confirmar Contraseña:</label>
+        {{ form.password_confirm }}
+    </div>
+
+    {% if form.non_field_errors %}
+        <div class="error">{{ form.password.errors.0 }}</div>
+    {% endif %}
+
+    <button type="submit" class='btn'>Registrarse</button>
+</form>
+{% endblock %}
