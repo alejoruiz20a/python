@@ -110,3 +110,21 @@ class LoginForm(forms.Form):
         if not password:
             raise forms.ValidationError('La contraseña es requerida')
         return password
+    
+    def clean_bloqueos(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get('email')
+
+        if email:
+            try:
+                usuario = Usuario.objects.get(email=email)
+
+                if usuario.esta_bloqueado():
+                    raise forms.ValidationError(
+                        'Cuenta temporalmente bloqueada por demasiados intentos fallidos.'
+                        'Intente nuevamente en 1 minuto.'
+                    )
+            except Usuario.DoesNotExist:
+                pass
+
+        return cleaned_data
