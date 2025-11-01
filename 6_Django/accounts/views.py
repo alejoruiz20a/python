@@ -3,6 +3,8 @@ from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
 from .forms import RegistroForm, LoginForm
 from .models import Usuario
+from books.models import Libro
+from django.db.models import Count
 
 @csrf_protect
 def registro(request):
@@ -72,14 +74,37 @@ def pagina_principal(request):
     if 'usuario_id' not in request.session:
         return redirect('login')
     
+    orden = request.GET.get('orden', 'recientes')
+
+    libros = Libro.objects.filter(publicado = True)
+
+    if orden == 'likes':
+        libros = libros.annotate(num_likes = Count('likes')).order_by('-num_likes')
+    else:
+        libros = libros.order_by('-fecha_creacion')
+
     usuario_id = request.session['usuario_id']
     usuario_username = request.session['usuario_username']
 
+    usuario_actual = Usuario.objects.get(id = usuario_id)
+
+    info_libros = []
+
+    for libro in libros:
+        info_libros.append({
+            'libro' : libro,
+            'ya_tiene_like' : libro.usuario_ya_dio_like(usuario_actual),
+            'total_likes' : libro.total_likes
+        })
+
     context = {
         'usuario_username' : usuario_username,
+        'info_libros' : info_libros,
+        'orden_actual' : orden,
+        'total_libros' : libros.count()
     }
 
-    return render(request,'pagina_principal.html', context)
+    return render(request, 'pagina_principal.html', context)
 
 def logout(request):
     request.session.flush()

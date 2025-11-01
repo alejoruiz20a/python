@@ -6,26 +6,55 @@
 
 <div>
     <h1>Bienvenido, {{usuario_username}}</h1>
-    <p>Has iniciado sesión correctamente</p>
 
-    <div>
-        <h3>Menú Principal</h3>
+    <div class = 'books-grid'>
+        {% if info_libros %}
+            {% for info_libro in info_libros%}
+            <div class = 'book-card'>
+                <div class = 'book-header'>
+                    <h3 class='book-title'>
+                        {{ info_libro.libro.titulo }}
+                    </h3>
+                    <span class='book-likes'>
+                        {{ info_libro.total_likes }} Me gustas
+                    </span>
+                </div>
 
-        <div>
-            <h4>Escribir algo</h4>
-            <p>Crea una nueva historia</p>
-            <button>Proximamente</button>
-        </div>
-        <div>
-            <h4>Mis Libros</h4>
-            <p>Ver mis historias</p>
-            <button>Proximamente</button>
-        </div>
-        <div>
-            <h4>Buscar un libro</h4>
-            <p>Descubre libros de otros autores</p>
-            <button>Proximamente</button>
-        </div>
+                <div class="book-author">
+                    <strong>Por: </strong>
+                    {% if info_libro.libro.autor.nombre and info_libro.libro.autor.apellido %}
+                        {{ info_libro.libro.autor.nombre }} {{ info_libro.libro.autor.apellido}}
+                    {% else %}
+                        {{ info_libro.libro.autor.username }}
+                    {% endif %}
+                </div>
+
+                <div class='book-meta'>
+                    <span>{{ info_libro.libro.fecha_creacion|date:"d M Y" }}</span>
+                </div>
+
+                <div class='book_actions'>
+                    <form method='post' action="{% url 'toggle_like' libro_info.libro.id %}" class="like-form">
+                        {% csrf_token %}
+                        <button type='submit' class='like-btn' {% if info_libro.ya_tiene_like %}liked{% endif %}> 
+                            {% if info_libro.ya_tiene_like%}
+                                Ya no me gusta
+                            {% else %}
+                                Me gusta
+                            {% endif %}
+                        </button>
+                    </form>
+                    
+                    <a href="{% url 'detalle_libro' info_libro.libro.id %}" class='read-btn'>LEER</a>                    
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class = 'no-books'>
+                <h3>Aún no hay libros publicados</h3>
+                <p>Sé el primero en escribir una historia increíble</p>
+            </div>
+        {% endif %}
     </div>
 
     <div>
