@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ libro.titulo }}{% endblock %}
+
+{% block content %}
+<div class = 'book-detail-container'>
+    <div class='back-nav'>
+        <a href="{% url 'pagina_principal' %}">Volver al Muro</a>
+    </div>
+
+    <div class'book-detail-header'>
+        <h1 class = 'book-detail-title'> {{ libro.titulo }}</h1>
+
+        <div clas='book-detail-meta'>
+            <div class = 'author-info'>
+                <strong>
+                    Autor:
+                </strong>
+                {% if libro.autor.nombre and libro.autor.apellido %}
+                    {{libro.autor.nombre}} {{libro.autor.apellido}}
+                {% else %}
+                    {{libro.autor.username}}
+                {% endif %}
+            </div>
+
+            <div class = 'book-stats'>
+                <span class = 'likes-count'>{{total_likes}} likes</span>
+                <span class = 'publish-date'>Publicado el {{libro.fecha_creacion|date:"d M Y"}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class='book-content-detailed'>
+        {{ libro.contenido|linebreaks}}
+    </div>
+
+    <div>
+        <form method="post" action="{% url 'toggle_like' libro.id %}">
+            {% csrf_token %}
+            <button type = 'submit' class="like-btn-detail {% if ya_tiene_like %}liked{% endif %}">
+                {% if ya_tiene_like %}
+                    Ya no me gusta
+                {% else %}
+                    Me gusta
+                {% endif %}
+            </button>
+        </form>
+        <div class='back-nav'>
+            <a href="{% url 'pagina_principal' %}">Volver al Muro</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

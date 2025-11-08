@@ -34,7 +34,7 @@
                 </div>
 
                 <div class='book_actions'>
-                    <form method='post' action="{% url 'toggle_like' libro_info.libro.id %}" class="like-form">
+                    <form method='post' action="{% url 'toggle_like' info_libro.libro.id %}" class="like-form">
                         {% csrf_token %}
                         <button type='submit' class='like-btn' {% if info_libro.ya_tiene_like %}liked{% endif %}> 
                             {% if info_libro.ya_tiene_like%}
