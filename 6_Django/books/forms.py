@@ -2,7 +2,7 @@ from django import forms
 import html
 from .models import Libro
 
-class LibroForm(forms.ModelForms):
+class LibroForm(forms.ModelForm):
     class Meta:
         model = Libro
         fields = ['titulo', 'contenido']

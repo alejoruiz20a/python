@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from accounts.views import registro, registro_exitoso, login, pagina_principal, logout
 
 urlpatterns = [
@@ -25,5 +25,6 @@ urlpatterns = [
     path('registro/exitoso', registro_exitoso, name='registro_exitoso'),
     path('principal/', pagina_principal, name='pagina_principal'),
     path('logout', logout, name='logout'),
-    path('', login, name='home')
+    path('', login, name='home'),
+    path('like/', include('books.urls')) # AQUÍ ESTABA EL ERROR
 ]
