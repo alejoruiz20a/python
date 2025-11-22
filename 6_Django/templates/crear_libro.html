@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Escribir una historia{% endblock %}
+
+{% block content %}
+
+<div class="create-book-container">
+    <div class="create-book-header">
+        <h1>Escribir una nueva historia</h1>
+    </div>
+
+    <div class="create-book-form">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.titulo.id_for_label }}">Título</label>
+                {{ form.titulo }}
+                {% if form.titulo.errors %}
+                    <div class="error">{{ form.titulo.errors.0 }}</div>
+                {% endif %}
+                <small class="form-text">Mínimo 3 caracteres, máximo 200</small>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.contenido.id_for_label }}">Contenido</label>
+                {{ form.contenido }}
+                {% if form.contenido.errors %}
+                    <div class="errors">{{ form.contenido.errors.0 }}</div>
+                {% endif %}
+                <small class="form-text">Mínimo 1000 caracteres</small>
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="error">
+                {{ form.non_field_errors.0 }}
+            </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn-publish">Publicar Libro</button>
+                <a href="{% url 'pagina_principal' %}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

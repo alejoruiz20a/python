@@ -59,7 +59,22 @@ def crear_libro(request):
 
     context = {
         'form' : form,
-        'usuario_username' : request.sessions['usuario_username']
+        'usuario_username' : request.session['usuario_username']
     }
 
     return render(request, 'crear_libro.html', context)
+
+def mis_libros(request):
+    if 'usuario_id' not in request.session:
+        return redirect('login')
+    
+    usuario_actual = get_object_or_404(Usuario, id = request.session['usuario_id'])
+    libros = Libro.objects.filter(autor=usuario_actual).order_by('-fecha_creacion')
+
+    context = {
+        'libros' : libros,
+        'usuario_username' : request.session['usuario_username'],
+        'total_mis_libros' : libros.count()
+    }
+
+    return render(request, 'mis_libros.html', context)

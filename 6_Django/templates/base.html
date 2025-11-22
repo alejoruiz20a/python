@@ -9,9 +9,16 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="{% url 'login' %}">Iniciar Sesión</a>
-        <a href="{% url 'registro' %}">Registrarse</a>
-        <a href="/admin/">Administración</a>
+        {% if request.session.usuario_id %}
+            <a href="{% url 'pagina_principal' %}">Inicio</a>
+            <a href="{% url 'mis_libros' %}">Mis Libros</a>
+            <a href="{% url 'crear_libro' %}">Escribir</a>
+            <a href="{% url 'logout' %}">Cerrar Sesión</a>
+        {% else %}
+            <a href="{% url 'login' %}">Iniciar Sesión</a>
+            <a href="{% url 'registro' %}">Registrarse</a>
+        {% endif %}
+        <a href="/admin/">Administración</a> 
     </div>
 
     <div class="container">

@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from accounts.views import registro, registro_exitoso, login, pagina_principal, logout
+from books.views import mis_libros
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,5 +27,6 @@ urlpatterns = [
     path('principal/', pagina_principal, name='pagina_principal'),
     path('logout', logout, name='logout'),
     path('', login, name='home'),
+    path('mis_libros/', mis_libros, name='mis_libros'),
     path('like/', include('books.urls')) # AQUÍ ESTABA EL ERROR
 ]

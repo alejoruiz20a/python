@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Libros{% endblock %}
+
+{% block content %}
+
+<div class="my-books-container">
+    <div class "my-books-header">
+        <h1>Mis Libros</h1>
+        <p>Las historias que has escrito aquí</p>
+        <a href="{% url 'crear_libro' %}" class="btn-new-book">Escribir Nuevo Libro</a>
+    </div>
+
+    <div class="book-stats">
+        <div class="stat-card">
+            <h3>{{ total_mis_libros }}</h3>
+            <p>Libros publicados</p>
+        </div>
+    </div>
+
+    <div class="my-books-list">
+        {% if libros %}
+            {% for libro in libros %}
+                <div class"my-book-card">
+                    <div class="my-book-header">
+                        <h3 class="my-book-title">{{ libro.titulo }}</h3>
+                        <span class="my-book-likes">{{ libro.total_likes}} me gustas</span>
+                    </div>
+
+                    <div class="my-book-meta">
+                        <span class="my-book-date">
+                            {{ libro.fecha_creacion|date:"d M Y" }}
+                        </span>
+                    </div>
+
+                    <div class="my-book-preview">
+                        {{ libro.contenido|truncatewords:50 }}
+                    </div>
+
+                    <div class="my-book-actions">
+                        <a href="{% url 'detalle_libro' libro.id %}" class="btn-read">Leer</a>
+                        <span class="book-status {% if libro.publicado %}published{% else %}draft{% endif %}">
+                            {% if libro.publicado %}Publicado{% else %}Borrador{% endif %}
+                        </span>
+                    </div>
+
+                </div>
+            {% endfor %}    
+        {% else %}
+            <div>
+                <h3>
+                    Aún no has escrito ningún libro
+                </h3>
+                <p>¡Comparte tu primer historia con la comunidad!</p>
+                <a href="{% url 'crear_libro' %}">Escribir mi primer historia</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock%}
