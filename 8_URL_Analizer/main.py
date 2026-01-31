@@ -34,9 +34,9 @@ SECURITY_HEADERS = {
         'min_score': 70
     },
     'Permissions-Policy': {
-        'descaription': 'Limita el accesos a cámara/microfono/ubicación',
+        'description': 'Limita el accesos a cámara/microfono/ubicación',
         'severity': 'LOW',
-        'recommendations': 'geolocation=(), microphone=(), camera=()',
+        'recommendation': 'geolocation=(), microphone=(), camera=()',
         'min_score': 70
     }
 }
@@ -106,6 +106,8 @@ class HTTPSecurityAnalyzer:
                 value = response.headers.get(header_name)
                 evaluator = EVALUATORS.get(header_name)
 
+                print(evaluator)
+
                 if evaluator:
                     score = evaluator(value)
                 else:
@@ -125,7 +127,7 @@ class HTTPSecurityAnalyzer:
                 'url': url,
                 'timestamp': datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
                 'status': response.status_code,
-                'score': score,
+                'score': total_score,
                 'grade': grade,
                 'headers': headers_data
             }
@@ -164,9 +166,123 @@ class HTTPSecurityAnalyzer:
         if score>=70: return 'C'
         if score>=60: return 'D'
         return 'F'
+
+    def print_summary(self):
+        if not self.results:
+            print("\nNo hay resultados\n")
+            return
+        
+        print("\n"+"="*90)
+        print(" RESUMEN DEL ANÁLISIS ")
+        print("="*90+"\n")
+
+        for idx, r in enumerate(self.results, 1):
+            print(f"==== [{idx}] {r['url']}")
+            print(f"|    {r['grade']} ({r['score']}/100) | {r['timestamp']}")
+
+            present = [(n, d['score']) for n, d in r['headers'].items() if d['present'] and d['score']>=70]
+            weak = [(n, d['score']) for n, d in r['headers'].items() if d['present'] and d['score']<70]
+            absent = [(n, d['score']) for n, d in r['headers'].items() if not d['present']]
+
+            if present:
+                print("|    Correctos:", ", ".join(f"{n}({s})" for n, s in present))
+            if weak:
+                print("|    Débiles:", ", ".join(f"{n}({s})" for n, s in weak))
+            if absent:
+                print("|    Ausentes:", ", ".join(f"{n}({s})" for n, s in absent))
+
+    def print_detailed(self):
+        if not self.results:
+            print("\nNo hay resultados\n")
+            return
+        
+        print("\n"+"="*90)
+        print(" RESUMEN DEL ANÁLISIS ")
+        print("="*90+"\n")
+
+        for idx, r in enumerate(self.results, 1):
+            print(f"\n[{idx}] {r['url']} - {r['grade']} ({r['score']}/100)")
+            print("-"*90)
+
+            for name, data in r['headers'].items():
+                config = SECURITY_HEADERS[name]
+                print(f"\n{name} [{data['severity']}]")
+                print(f"{config['description']}")
+
+                if data['present']:
+                    status = "GOOD" if data['score'] >= 70 else "CAUTION"
+                    print(f"    {status} | Score: {data['score']}/100")
+                    print(f"    {data['value']}")
+                else:
+                    print("    AUSENTE (0/100)")
+                    print(f"    Recomendación: {config['recommendation']}")
+
+            print("\n"+"="*90)
+
+    def export_csv(self, filename="security_report.csv"):
+        if not self.results:
+            print("\nNo hay resultados\n")
+            return
+        
+        rows = []
+        for r in self.results:
+            row = {
+                    'URL': r['url'],
+                    'Fecha': r['timestamp'],
+                    'Puntuación': r['score'],
+                    'Calificación': r['grade'],
+                   }
+            for name, data in r['headers'].items():
+                row[f"{name}_presente"] = "Sí" if data['present'] else "No"
+                row[f"{name}_score"] = data['score']
+            rows.append(row)
+
+        pd.DataFrame(rows).to_csv(filename, index=False, encoding='utf-8')
+        print(f"\nExportado: {filename}\n")
+
+
+def main():
+    analyzer = HTTPSecurityAnalyzer()
+
+    print("\n"+"="*90)
+    print(" ANALIZADOR DE SEGURIDAD HTTP ")
+    print("="*90+"\n")
+
+    while True:
+        print("1. Analizar URLs")
+        print("2. Ver Resumen")
+        print("3. Ver detallado")
+        print("4. Exportar CSV")
+        print("5. Salir\n")
+
+        choice = int(input("Opción: "))
+
+        match choice:
+            case 1:
+                print("\nIngresa las URLs (línea vacía para terminar):\n")
+                urls = []
+
+                while True:
+                    url = input("URL: ").strip()
+                    if not url:
+                        break
+                    urls.append(url)
+
+                if urls:
+                    print(f"\nAnalizando {len(urls)} sitio(s)...")
+                    for url in urls:
+                        analyzer.analyze_url(url)
+            case 2:
+                analyzer.print_summary()
+            case 3:
+                analyzer.print_detailed()
+            case 4:
+                name= input("\nArchivo (Enter='security_report.csv): ").strip() or "security_report.csv"
+                analyzer.export_csv(name if name.endswith('.csv') else name+'.csv')
+            case 5:
+                print('Cerrando analizador...')
+            
+            case _:
+                print("Opción Invalida")
     
-# PRUEBA
-
-prueba = HTTPSecurityAnalyzer()
-
-prueba.analyze_url('https://www.youtube.com/')
+main()
